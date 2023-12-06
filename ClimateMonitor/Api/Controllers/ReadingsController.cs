@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ClimateMonitor.Services;
 using ClimateMonitor.Services.Models;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace ClimateMonitor.Api.Controllers;
 
@@ -34,9 +35,10 @@ public class ReadingsController : ControllerBase
     /// <param name="deviceReadingRequest">Sensor information and extra metadata from device.</param>
     [HttpPost("evaluate")]
     public ActionResult<IEnumerable<Alert>> EvaluateReading(
-        string deviceSecret,
         [FromBody] DeviceReadingRequest deviceReadingRequest)
     {
+        string deviceSecret = this.Request.Headers["x-device-shared-secret"];
+
         if (!_secretValidator.ValidateDeviceSecret(deviceSecret))
         {
             return Problem(
